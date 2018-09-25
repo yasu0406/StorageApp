@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "288279101767",
+    "firebase_url": "https://storageapp-15a53.firebaseio.com",
+    "project_id": "storageapp-15a53",
+    "storage_bucket": "storageapp-15a53.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:288279101767:android:3c2c00cf6724e2f5",
+        "android_client_info": {
+          "package_name": "com.example.katayama.storageapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "288279101767-9jrsdgvevr92o46nusq8mcmg9me7ihqn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4UA6pzHNlHq3FcgsIliY6M8QkhB787hU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
