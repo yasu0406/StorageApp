@@ -18,6 +18,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.example.katayama.storageapp.model.ImageUploadInfo
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -25,7 +26,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import java.io.IOException
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Assign FirebaseStorage instance to storageReference.
-        storageReference = FirebaseStorage.getInstance().reference
+        storageReference = FirebaseStorage.getInstance().reference.child(Storage_Path)
 
         // Assign FirebaseDatabase instance with root database name.
         databaseReference = FirebaseDatabase.getInstance().getReference(Database_Path)
@@ -71,8 +71,7 @@ class MainActivity : AppCompatActivity() {
         ImageName = findViewById(R.id.ImageNameEditText) as EditText
         SelectImage = findViewById(R.id.ShowImageView) as ImageView
 
-        // Assigning Id to ProgressDialog.
-//        progressDialog = ProgressDialog(MainActivity.this)
+        downLoad()
 
 
         ChooseButton!!.setOnClickListener { view ->
@@ -89,6 +88,7 @@ class MainActivity : AppCompatActivity() {
             // Calling method to upload selected image on Firebase storage.
             UploadImageFileToFirebaseStorage()
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -122,8 +122,6 @@ class MainActivity : AppCompatActivity() {
                 // Setting up bitmap selected image into ImageView.
                 SelectImage!!.setImageBitmap(bitmap)
 
-                // After selecting image change choose button above text.
-                ChooseButton!!.setText("Image Selected")
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -132,60 +130,72 @@ class MainActivity : AppCompatActivity() {
 
     // Creating Method to get the selected image file Extension from File Path URI.
     fun GetFileExtension(uri: Uri):String {
-        val contentResolver = getContentResolver()
+        val contentResolver = contentResolver
 
-        var mimeTypeMap: MimeTypeMap = MimeTypeMap.getSingleton()
+        val mimeTypeMap: MimeTypeMap = MimeTypeMap.getSingleton()
 
         // Returning the file Extension.
 
-        return mimeTypeMap.getMimeTypeFromExtension(contentResolver.getType(uri))
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri))
     }
 
     // Creating UploadImageFileToFirebaseStorage method to upload image on storage.
     fun UploadImageFileToFirebaseStorage() {
         // Checking whether FilePathUri Is empty or not.
         if(FilePathUri != null) {
-            // Setting progressDialog Title.
+            val fileName = ImageName!!.text.toString()
 
-            // Showing progressDialog.
+
+            val progressDialog = ProgressDialog(this)
+            progressDialog.setTitle("Uploading")
+            progressDialog.show()
 
             // Creating second StorageReference.
-            val storageReference2nd = storageReference!!.child(Storage_Path + UUID.randomUUID().toString())
+            val storageReference2nd = storageReference!!.child(fileName)
             // Create the file metadata
             var metadata = StorageMetadata.Builder()
                     .setContentType("image/jpeg")
                     .build()
-            // Adding addOnSuccessListener to second StorageReference.
-            storageReference2nd.putFile(FilePathUri!!,metadata).addOnSuccessListener{ taskSnapshot ->
 
-                // Getting image name from EditText and store into string variable.
-                var TempImageName = ImageName!!.text.toString().trim()
+            // Adding addOnSuccessListener to second StorageReference.
+            storageReference2nd.putFile(FilePathUri!!, metadata).addOnSuccessListener{ taskSnapshot ->
+                progressDialog.dismiss()
 
                 // Showing toast message after done uploading.
                 Toast.makeText(applicationContext, "Image Uploaded Successfully ", Toast.LENGTH_SHORT).show()
 
-                @SuppressWarnings("VisibleForTests")
-                var imageUploadInfo = ImageUploadInfo(TempImageName, taskSnapshot.storage.downloadUrl.toString())
 
-                // Getting image upload ID.
-                var ImageUploadId:String? = databaseReference!!.push().key
-
-                // Adding image upload id s child element into databaseReference.
-                databaseReference!!.child(ImageUploadId!!).setValue(imageUploadInfo)
+                storageReference2nd!!.downloadUrl.addOnCompleteListener { taskSnapshot ->
+                    var url = taskSnapshot.result.toString()
+                    writeNewImageInfoToDB(fileName, url)
+                }
 
             }.addOnFailureListener{ exception ->
 
                 // Showing exception erro message.
                 Toast.makeText(this@MainActivity, exception.message, Toast.LENGTH_SHORT).show()
 
-            }.addOnProgressListener { taskSnapshot ->
-                // taskSnapshot.bytesTransferred
-                // taskSnapshot.totalByteCount
             }
         } else {
             Toast.makeText(this@MainActivity, "Please Select Image or Add Image Name", Toast.LENGTH_SHORT).show()
         }
 
+    }
+
+    private fun writeNewImageInfoToDB(name: String, url: String) {
+        val info = ImageUploadInfo(name, url)
+        val key = databaseReference!!.push().key as String
+        databaseReference!!.child(key).setValue(info)
+    }
+
+    private fun downLoad() {
+        storageReference!!.downloadUrl.addOnSuccessListener { Uri ->
+            val imageView = findViewById<ImageView>(R.id.imageView)
+            Glide.with(this /* context */)
+                    .load(Uri)
+                    .into(imageView)
+
+        }
     }
 
 }
