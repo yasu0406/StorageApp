@@ -9,21 +9,21 @@
     tools:showIn="@layout/activity_main">
 
     <TextView
+        android:id="@+id/textview"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Firebase Image Upload Tutorial"
-        android:id="@+id/textview"
-        android:textStyle="bold"
-        android:textSize="20dp"
+        android:layout_marginTop="20dp"
         android:gravity="center"
-        android:layout_marginTop="20dp"/>
+        android:text="Image Upload"
+        android:textSize="20dp"
+        android:textStyle="bold" />
 
     <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="200dp"
         android:id="@+id/ShowImageView"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
         android:layout_below="@+id/textview"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp" />
 
     <Button
         android:layout_width="fill_parent"
@@ -42,12 +42,30 @@
         android:hint="Enter Image Name Here"
         android:gravity="center"/>
 
-    <Button
+    <EditText
+        android:id="@+id/ImageContentEditText"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/ButtonUploadImage"
         android:layout_below="@+id/ImageNameEditText"
         android:layout_marginTop="20dp"
-        android:text="Upload image to Firebase Storage"/>
+        android:gravity="center"
+        android:hint="Enter Image Content Here" />
+
+    <Button
+        android:id="@+id/ButtonUploadImage"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ImageContentEditText"
+        android:layout_marginTop="20dp"
+        android:text="Upload image to Firebase Storage" />
+
+    <Button
+        android:id="@+id/ButtonShowImage"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ButtonUploadImage"
+        android:layout_marginTop="20dp"
+        android:text="Show Images" />
+
 
 </RelativeLayout>
