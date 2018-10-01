@@ -1,7 +1,6 @@
 package com.example.katayama.storageapp.adapter
 
 import android.content.Context
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +8,7 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import com.example.katayama.storageapp.R
 import android.widget.TextView
+import com.bumptech.glide.Glide
 import com.example.katayama.storageapp.model.ImageUploadInfo
 
 
@@ -29,10 +29,14 @@ class ListAdapter(context: Context) : BaseAdapter() {
 
         var convertView = mlayoutInflater!!.inflate(R.layout.listview_row, viewGroup, false)
 
-        var titleList = convertView!!.findViewById<TextView>(R.id.title)
-        titleList.setText(mListArray!!.get(position).imageName)
+        var title = convertView!!.findViewById<TextView>(R.id.title)
+        title.setText(mListArray!!.get(position).imageName)
+        var content = convertView!!.findViewById<TextView>(R.id.content)
+        content.setText(mListArray!!.get(position).imageContent)
         var imageList = convertView!!.findViewById<ImageView>(R.id.imageListView)
-        imageList.setImageURI(mListArray!!.get(position).imageURL as Uri)
+        Glide.with(imageList)
+                .load(mListArray!!.get(position).imageURL)
+                .into(imageList)
 
         return convertView
     }
@@ -41,8 +45,8 @@ class ListAdapter(context: Context) : BaseAdapter() {
         mListArray = listArray
     }
 
-    override fun getItem(p0: Int): Any {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getItem(position: Int): Any {
+        return mListArray!!.get(position)
     }
 
 }
