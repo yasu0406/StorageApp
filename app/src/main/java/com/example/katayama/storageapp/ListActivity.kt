@@ -32,8 +32,9 @@ class ListActivity : AppCompatActivity() {
 
     var mListView: ListView? = null
 
-    var name:String? = null
-    var uri: String? = null
+    var imageName:String? = null
+    var imageURL: String? = null
+    var imageContent: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +46,7 @@ class ListActivity : AppCompatActivity() {
         listAdapter = ListAdapter(this)
         imageUploadInfos!!.clear()
         listAdapter!!.setlistArray(imageUploadInfos)
+        mListView!!.setAdapter(listAdapter)
         listViewDatas()
 
     }
@@ -53,11 +55,12 @@ class ListActivity : AppCompatActivity() {
         var mChildEventListener = object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
                 listMap = dataSnapshot.getValue() as MutableMap<String, Any>
-                name = listMap!!.get("imageName") as String
-                uri = listMap!!.get("imageURL") as String
+                imageName = listMap!!.get("imageName") as String
+                imageURL = listMap!!.get("imageURL") as String
+                imageContent = listMap!!.get("imageContent") as String
 
 
-                var imageUploadInfo = ImageUploadInfo(name, uri)
+                var imageUploadInfo = ImageUploadInfo(imageName, imageURL, imageContent)
                 imageUploadInfos!!.add(imageUploadInfo)
                 listAdapter!!.notifyDataSetChanged()
             }
