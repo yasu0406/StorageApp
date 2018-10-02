@@ -18,7 +18,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
-import com.bumptech.glide.Glide
 import com.example.katayama.storageapp.model.ImageUploadInfo
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -37,7 +36,9 @@ class MainActivity : AppCompatActivity() {
 
     private var ChooseButton: Button? = null
     private var UploadButton: Button? = null
+    private var ShowButton: Button? = null
     private var ImageName: EditText? = null
+    private var ImageContent: EditText? = null
     private var SelectImage: ImageView? = null
     private var FilePathUri: Uri? = null
     private var storageReference: StorageReference? = null
@@ -66,13 +67,12 @@ class MainActivity : AppCompatActivity() {
         //Assign ID'S to button.
         ChooseButton = findViewById(R.id.ButtonChooseImage) as Button
         UploadButton = findViewById(R.id.ButtonUploadImage) as Button
+        ShowButton = findViewById(R.id.ButtonShowImage) as Button
 
         // Assign ID's to EditText.
         ImageName = findViewById(R.id.ImageNameEditText) as EditText
+        ImageContent =  findViewById(R.id.ImageContentEditText) as EditText
         SelectImage = findViewById(R.id.ShowImageView) as ImageView
-
-        downLoad()
-
 
         ChooseButton!!.setOnClickListener { view ->
             // Creating intent
@@ -87,6 +87,12 @@ class MainActivity : AppCompatActivity() {
         UploadButton!!.setOnClickListener { view ->
             // Calling method to upload selected image on Firebase storage.
             UploadImageFileToFirebaseStorage()
+        }
+
+        ShowButton!!.setOnClickListener { view ->
+            // Creating intent
+            var intent = Intent(this, ListActivity::class.java)
+            startActivity(intent)
         }
 
     }
@@ -144,6 +150,7 @@ class MainActivity : AppCompatActivity() {
         // Checking whether FilePathUri Is empty or not.
         if(FilePathUri != null) {
             val fileName = ImageName!!.text.toString()
+            val content = ImageContent!!.text.toString()
 
 
             val progressDialog = ProgressDialog(this)
@@ -167,7 +174,7 @@ class MainActivity : AppCompatActivity() {
 
                 storageReference2nd!!.downloadUrl.addOnCompleteListener { taskSnapshot ->
                     var url = taskSnapshot.result.toString()
-                    writeNewImageInfoToDB(fileName, url)
+                    writeNewImageInfoToDB(fileName, url, content)
                 }
 
             }.addOnFailureListener{ exception ->
@@ -182,20 +189,9 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun writeNewImageInfoToDB(name: String, url: String) {
-        val info = ImageUploadInfo(name, url)
+    private fun writeNewImageInfoToDB(name: String, url: String, content: String) {
+        val info = ImageUploadInfo(name, url, content)
         val key = databaseReference!!.push().key as String
         databaseReference!!.child(key).setValue(info)
     }
-
-    private fun downLoad() {
-        storageReference!!.downloadUrl.addOnSuccessListener { Uri ->
-            val imageView = findViewById<ImageView>(R.id.imageView)
-            Glide.with(this /* context */)
-                    .load(Uri)
-                    .into(imageView)
-
-        }
-    }
-
 }
