@@ -3,14 +3,10 @@ package com.example.katayama.storageapp
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
 import android.widget.ListView
 import com.example.katayama.storageapp.adapter.ListAdapter
 import com.example.katayama.storageapp.model.ImageUploadInfo
 import com.google.firebase.database.*
-import com.google.firebase.storage.StorageReference
-import android.accounts.Account
 
 
 
@@ -20,14 +16,8 @@ class ListActivity : AppCompatActivity() {
     // Root Database Name for Firebase Database.
     private val Database_Path: String = "All_Image_Uploads_Database"
 
-    // Folder path for Firebase Storage.
-    private val Storage_Path: String = "All_Image_Uploads/"
-
     //database reference
     private var databaseReference: DatabaseReference? = null
-
-    // storage reference
-    private var storageReference: StorageReference? = null
 
     //list to hold all the uploaded images
     private var imageUploadInfos: ArrayList<ImageUploadInfo>? = null
@@ -58,7 +48,10 @@ class ListActivity : AppCompatActivity() {
 
         mListView!!.setOnItemClickListener { parent, view, position, id ->
             var intent = Intent(view.context, ListDetailActivity::class.java)
-            intent.putExtra("imageUploadInfo", imageUploadInfos!!.get(position).toString())
+            val imageUploadInfo = this.imageUploadInfos!![position]
+            intent.putExtra("imageURL", imageUploadInfo.imageURL)
+            intent.putExtra("imageName", imageUploadInfo.imageName)
+            intent.putExtra("imageContent", imageUploadInfo.imageContent)
             startActivity(intent)
         }
     }
