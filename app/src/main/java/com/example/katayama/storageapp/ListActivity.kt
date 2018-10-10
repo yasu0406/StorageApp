@@ -1,12 +1,18 @@
 package com.example.katayama.storageapp
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ListView
 import com.example.katayama.storageapp.adapter.ListAdapter
 import com.example.katayama.storageapp.model.ImageUploadInfo
 import com.google.firebase.database.*
 import com.google.firebase.storage.StorageReference
+import android.accounts.Account
+
+
 
 
 class ListActivity : AppCompatActivity() {
@@ -36,19 +42,25 @@ class ListActivity : AppCompatActivity() {
     var imageURL: String? = null
     var imageContent: String? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
 
         databaseReference = FirebaseDatabase.getInstance().getReference(Database_Path)
         mListView = findViewById(R.id.listView) as ListView
-        imageUploadInfos = ArrayList<ImageUploadInfo>()
         listAdapter = ListAdapter(this)
+        imageUploadInfos = ArrayList()
         imageUploadInfos!!.clear()
         listAdapter!!.setlistArray(imageUploadInfos)
         mListView!!.setAdapter(listAdapter)
         listViewDatas()
 
+        mListView!!.setOnItemClickListener { parent, view, position, id ->
+            var intent = Intent(view.context, ListDetailActivity::class.java)
+            intent.putExtra("imageUploadInfo", imageUploadInfos!!.get(position).toString())
+            startActivity(intent)
+        }
     }
 
     private fun listViewDatas() {
