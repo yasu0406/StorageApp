@@ -1,12 +1,16 @@
 package com.example.katayama.storageapp
 
+import android.content.Intent
+import android.content.Intent.getIntent
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
+import kotlinx.android.synthetic.*
 
 class DetailFragment : Fragment() {
 
@@ -18,8 +22,15 @@ class DetailFragment : Fragment() {
 
         relMain = view?.findViewById(R.id.rel_main) as RelativeLayout
         detailText = view?.findViewById(R.id.detailTextView) as TextView
-        detailText!!.text = "test"
+
+        val extras = activity!!.intent.extras
+
+        var imageContent = extras.getString("imageContent")
+        detailText!!.text = imageContent
+
         return view
     }
+
+
 
 }
